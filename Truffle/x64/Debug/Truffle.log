@@ -1,0 +1,191 @@
+﻿C:\Program Files (x86)\Microsoft Visual Studio\2017\Enterprise\Common7\IDE\VC\VCTargets\Platforms\x64\PlatformToolsets\v141_xp\Toolset.targets(39,5): warning MSB8051: Support for targeting Windows XP is deprecated and will not be present in future releases of Visual Studio. Please see https://go.microsoft.com/fwlink/?linkid=2023588 for more information.
+  main.cpp
+c:\program files (x86)\microsoft sdks\windows\v7.1a\include\objbase.h(239): error C2760: syntax error: unexpected token 'identifier', expected 'type specifier'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(10): error C2039: 'Eip': is not a member of '_CONTEXT'
+  c:\program files (x86)\microsoft sdks\windows\v7.1a\include\winnt.h(3294): note: see declaration of '_CONTEXT'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(10): warning C4311: 'type cast': pointer truncation from 'PVOID' to 'DWORD'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(10): warning C4302: 'type cast': truncation from 'PVOID' to 'DWORD'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(12): error C4235: nonstandard extension used: '__asm' keyword not supported on this architecture
+c:\users\admin\source\repos\truffle\truffle\main.cpp(12): error C2059: syntax error: 'constant'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(31): error C4235: nonstandard extension used: '__asm' keyword not supported on this architecture
+c:\users\admin\source\repos\truffle\truffle\main.cpp(32): error C2065: 'mov': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\main.cpp(32): error C2146: syntax error: missing ';' before identifier 'ecx'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(32): error C2065: 'ecx': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\main.cpp(32): error C2065: 'esp': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\main.cpp(33): error C2146: syntax error: missing ';' before identifier 'mov'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(33): error C2065: 'mov': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\main.cpp(33): error C2146: syntax error: missing ';' before identifier 'esp_save'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(33): error C2065: 'ecx': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\main.cpp(35): error C2146: syntax error: missing ';' before identifier 'push'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(35): error C2065: 'push': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\main.cpp(35): error C2143: syntax error: missing ';' before 'constant'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(36): error C2146: syntax error: missing ';' before identifier 'push'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(36): error C2065: 'push': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\main.cpp(36): error C2143: syntax error: missing ';' before 'constant'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(37): error C2146: syntax error: missing ';' before identifier 'push'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(37): error C2065: 'push': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\main.cpp(37): error C2143: syntax error: missing ';' before 'constant'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(38): error C2146: syntax error: missing ';' before identifier 'push'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(38): error C2065: 'push': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\main.cpp(38): error C2143: syntax error: missing ';' before 'constant'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(39): error C2146: syntax error: missing ';' before identifier 'push'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(39): error C2065: 'push': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\main.cpp(39): error C2143: syntax error: missing ';' before 'constant'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(40): error C2146: syntax error: missing ';' before identifier 'push'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(40): error C2065: 'push': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\main.cpp(40): error C2143: syntax error: missing ';' before 'constant'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(41): error C2146: syntax error: missing ';' before identifier 'push'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(41): error C2065: 'push': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\main.cpp(41): error C2143: syntax error: missing ';' before 'constant'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(42): error C2146: syntax error: missing ';' before identifier 'push'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(42): error C2065: 'push': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\main.cpp(42): error C2143: syntax error: missing ';' before 'constant'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(43): error C2146: syntax error: missing ';' before identifier 'push'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(43): error C2065: 'push': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\main.cpp(43): error C2143: syntax error: missing ';' before 'constant'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(44): error C2146: syntax error: missing ';' before identifier 'push'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(44): error C2065: 'push': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\main.cpp(44): error C2143: syntax error: missing ';' before 'constant'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(45): error C2146: syntax error: missing ';' before identifier 'push'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(45): error C2065: 'push': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\main.cpp(45): error C2143: syntax error: missing ';' before 'constant'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(46): error C2146: syntax error: missing ';' before identifier 'push'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(46): error C2065: 'push': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\main.cpp(46): error C2143: syntax error: missing ';' before 'constant'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(47): error C2146: syntax error: missing ';' before identifier 'push'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(47): error C2065: 'push': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\main.cpp(47): error C2143: syntax error: missing ';' before 'constant'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(48): error C2146: syntax error: missing ';' before identifier 'push'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(48): error C2065: 'push': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\main.cpp(48): error C2143: syntax error: missing ';' before 'constant'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(49): error C2146: syntax error: missing ';' before identifier 'push'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(49): error C2065: 'push': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\main.cpp(49): error C2143: syntax error: missing ';' before 'constant'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(50): error C2146: syntax error: missing ';' before identifier 'push'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(50): error C2065: 'push': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\main.cpp(50): error C2143: syntax error: missing ';' before 'constant'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(52): error C2146: syntax error: missing ';' before identifier 'mov'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(52): error C2065: 'mov': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\main.cpp(52): error C2146: syntax error: missing ';' before identifier 'edx'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(52): error C2065: 'edx': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\main.cpp(53): error C3260: 'identifier': skipping unexpected token(s) before lambda body
+c:\users\admin\source\repos\truffle\truffle\main.cpp(57): error C4235: nonstandard extension used: '__asm' keyword not supported on this architecture
+c:\users\admin\source\repos\truffle\truffle\main.cpp(57): error C2059: syntax error: 'constant'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(58): error C2146: syntax error: missing ';' before identifier 'call'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(58): error C2065: 'call': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\main.cpp(60): error C2146: syntax error: missing ';' before identifier 'eax'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(58): error C2065: 'eax': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\main.cpp(60): error C2146: syntax error: missing ';' before identifier 'mov'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(60): error C2065: 'mov': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\main.cpp(60): error C2146: syntax error: missing ';' before identifier 'edx'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(60): error C2065: 'edx': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\main.cpp(61): error C3260: 'identifier': skipping unexpected token(s) before lambda body
+c:\users\admin\source\repos\truffle\truffle\main.cpp(63): error C4235: nonstandard extension used: '__asm' keyword not supported on this architecture
+c:\users\admin\source\repos\truffle\truffle\main.cpp(63): error C2059: syntax error: 'constant'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(65): error C2146: syntax error: missing ';' before identifier 'mov'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(65): error C2065: 'mov': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\main.cpp(65): error C2146: syntax error: missing ';' before identifier 'ecx'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(65): error C2065: 'ecx': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\main.cpp(66): error C3260: 'identifier': skipping unexpected token(s) before lambda body
+c:\users\admin\source\repos\truffle\truffle\main.cpp(70): error C4235: nonstandard extension used: '__asm' keyword not supported on this architecture
+c:\users\admin\source\repos\truffle\truffle\main.cpp(70): error C2059: syntax error: 'constant'
+c:\users\admin\source\repos\truffle\truffle\main.cpp(73): error C2601: 'main': local function definitions are illegal
+c:\users\admin\source\repos\truffle\truffle\main.cpp(78): error C4235: nonstandard extension used: '__asm' keyword not supported on this architecture
+c:\users\admin\source\repos\truffle\truffle\main.cpp(83): error C4235: nonstandard extension used: '__asm' keyword not supported on this architecture
+c:\users\admin\source\repos\truffle\truffle\main.cpp(88): error C4235: nonstandard extension used: '__asm' keyword not supported on this architecture
+c:\users\admin\source\repos\truffle\truffle\main.cpp(122): fatal error C1004: unexpected end-of-file found
+  W32Fuzzer.cpp
+c:\program files (x86)\microsoft sdks\windows\v7.1a\include\objbase.h(239): error C2760: syntax error: unexpected token 'identifier', expected 'type specifier'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(16): warning C4311: 'type cast': pointer truncation from 'HMODULE' to 'DWORD'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(16): warning C4302: 'type cast': truncation from 'HMODULE' to 'DWORD'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(18): warning C4312: 'type cast': conversion from 'DWORD' to 'PIMAGE_DOS_HEADER' of greater size
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(23): warning C4312: 'type cast': conversion from 'DWORD' to 'PIMAGE_NT_HEADERS' of greater size
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(46): error C3867: 'W32Fuzzer::argLengthProc': non-standard syntax; use '&' to create a pointer to member
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(81): warning C4311: 'type cast': pointer truncation from 'HMODULE' to 'DWORD'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(81): warning C4302: 'type cast': truncation from 'HMODULE' to 'DWORD'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(81): warning C4312: 'type cast': conversion from 'DWORD' to 'PIMAGE_DOS_HEADER' of greater size
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(83): warning C4311: 'type cast': pointer truncation from 'HMODULE' to 'DWORD'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(83): warning C4302: 'type cast': truncation from 'HMODULE' to 'DWORD'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(83): warning C4312: 'type cast': conversion from 'unsigned long' to 'PIMAGE_NT_HEADERS' of greater size
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(85): warning C4311: 'type cast': pointer truncation from 'HMODULE' to 'DWORD'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(85): warning C4302: 'type cast': truncation from 'HMODULE' to 'DWORD'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(87): warning C4312: 'type cast': conversion from 'unsigned long' to 'PIMAGE_EXPORT_DIRECTORY' of greater size
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(88): warning C4311: 'type cast': pointer truncation from 'HMODULE' to 'DWORD'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(88): warning C4302: 'type cast': truncation from 'HMODULE' to 'DWORD'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(88): warning C4312: 'type cast': conversion from 'unsigned long' to 'PDWORD' of greater size
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(91): warning C4311: 'type cast': pointer truncation from 'HMODULE' to 'DWORD'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(91): warning C4302: 'type cast': truncation from 'HMODULE' to 'DWORD'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(91): warning C4312: 'type cast': conversion from 'unsigned long' to 'CHAR *' of greater size
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(92): warning C4311: 'type cast': pointer truncation from 'HMODULE' to 'DWORD'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(92): warning C4302: 'type cast': truncation from 'HMODULE' to 'DWORD'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(92): warning C4312: 'type cast': conversion from 'unsigned long' to 'PWORD' of greater size
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(94): warning C4311: 'type cast': pointer truncation from 'HMODULE' to 'DWORD'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(94): warning C4302: 'type cast': truncation from 'HMODULE' to 'DWORD'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(94): warning C4312: 'type cast': conversion from 'unsigned long' to 'PDWORD' of greater size
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(95): warning C4311: 'type cast': pointer truncation from 'HMODULE' to 'DWORD'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(95): warning C4302: 'type cast': truncation from 'HMODULE' to 'DWORD'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(95): warning C4312: 'type cast': conversion from 'unsigned long' to 'PVOID' of greater size
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(111): error C4235: nonstandard extension used: '__asm' keyword not supported on this architecture
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(112): error C2065: 'mov': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(112): error C2146: syntax error: missing ';' before identifier 'edx'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(112): error C2065: 'edx': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(112): error C2065: 'esp': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(113): error C2146: syntax error: missing ';' before identifier 'mov'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(113): error C2065: 'mov': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(113): error C2146: syntax error: missing ';' before identifier 'espRestore'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(113): error C2065: 'edx': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(114): error C2146: syntax error: missing ';' before identifier 'push'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(114): error C2065: 'push': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(114): error C2143: syntax error: missing ';' before 'constant'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(115): error C2146: syntax error: missing ';' before identifier 'push'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(115): error C2065: 'push': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(115): error C2143: syntax error: missing ';' before 'constant'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(116): error C2146: syntax error: missing ';' before identifier 'push'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(116): error C2065: 'push': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(116): error C2143: syntax error: missing ';' before 'constant'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(117): error C2146: syntax error: missing ';' before identifier 'push'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(117): error C2065: 'push': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(117): error C2143: syntax error: missing ';' before 'constant'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(118): error C2146: syntax error: missing ';' before identifier 'push'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(118): error C2065: 'push': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(118): error C2143: syntax error: missing ';' before 'constant'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(119): error C2146: syntax error: missing ';' before identifier 'push'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(119): error C2065: 'push': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(119): error C2143: syntax error: missing ';' before 'constant'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(120): error C2146: syntax error: missing ';' before identifier 'push'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(120): error C2065: 'push': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(120): error C2143: syntax error: missing ';' before 'constant'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(121): error C2146: syntax error: missing ';' before identifier 'push'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(121): error C2065: 'push': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(121): error C2143: syntax error: missing ';' before 'constant'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(122): error C2146: syntax error: missing ';' before identifier 'push'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(122): error C2065: 'push': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(122): error C2143: syntax error: missing ';' before 'constant'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(123): error C2146: syntax error: missing ';' before identifier 'push'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(123): error C2065: 'push': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(123): error C2143: syntax error: missing ';' before 'constant'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(124): error C2146: syntax error: missing ';' before identifier 'push'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(124): error C2065: 'push': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(124): error C2143: syntax error: missing ';' before 'constant'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(125): error C2146: syntax error: missing ';' before identifier 'push'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(125): error C2065: 'push': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(125): error C2143: syntax error: missing ';' before 'constant'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(126): error C2146: syntax error: missing ';' before identifier 'push'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(126): error C2065: 'push': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(126): error C2143: syntax error: missing ';' before 'constant'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(127): error C2146: syntax error: missing ';' before identifier 'push'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(127): error C2065: 'push': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(127): error C2143: syntax error: missing ';' before 'constant'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(128): error C2146: syntax error: missing ';' before identifier 'push'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(128): error C2065: 'push': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(128): error C2143: syntax error: missing ';' before 'constant'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(129): error C2146: syntax error: missing ';' before identifier 'push'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(129): error C2065: 'push': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(129): error C2143: syntax error: missing ';' before 'constant'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(130): error C2146: syntax error: missing ';' before identifier 'mov'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(130): error C2065: 'mov': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(130): error C2146: syntax error: missing ';' before identifier 'edx'
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(130): error C2065: 'edx': undeclared identifier
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(131): error C3260: 'identifier': skipping unexpected token(s) before lambda body
+c:\users\admin\source\repos\truffle\truffle\w32fuzzer.cpp(144): fatal error C1903: unable to recover from previous error(s); stopping compilation
+  Generating Code...

@@ -29,7 +29,7 @@ private:
 	void loadWin32Image(CHAR* imageName);
 	void populateExportedFunctions();
 
-	DWORD WINAPI argLengthProc(PVOID lpThreadParams);
+	static DWORD WINAPI argLengthProc(PVOID lpThreadParams);
 
 	HMODULE imageBaseAddress;
 	list<W32_FUNCTION> exportedFunctions;
