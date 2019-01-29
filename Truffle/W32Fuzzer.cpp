@@ -1,6 +1,7 @@
 #include "W32Fuzzer.h"
 
-W32Fuzzer::W32Fuzzer(CHAR* w32ModuleName) {
+// Public ctor
+W32Fuzzer::W32Fuzzer(const TCHAR* w32ModuleName) {
 	this->loadWin32Image(w32ModuleName);
 	this->populateExportedFunctions();
 }
@@ -39,10 +40,20 @@ list<W32_FUNCTION> W32Fuzzer::getExportedFunctions() {
 	return this->exportedFunctions;
 }
 
+bool W32Fuzzer::setVectoredHook()
+{
+	return AddVectoredExceptionHandler(TRUE, W32Fuzzer::VectoredHandler);
+}
+
+bool W32Fuzzer::removeVectoredHook()
+{
+	return RemoveVectoredExceptionHandler(W32Fuzzer::VectoredHandler);
+}
+
 void W32Fuzzer::test_GetProcLengths() {
 	for (auto const& fn : this->exportedFunctions) {
 		DWORD dwThreadId;
-		HANDLE hThread = CreateThread(NULL, 0, &W32Fuzzer::argLengthProc, (PVOID)&fn, 0, &dwThreadId);
+		HANDLE hThread = CreateThread(NULL, 0, &W32Fuzzer::ThreadFindParamaterCount, (PVOID)&fn, 0, &dwThreadId);
 		if (hThread) {
 			if (WaitForSingleObject(hThread, 30 * 1000) == WAIT_TIMEOUT) {
 				TerminateThread(hThread, -1);
@@ -54,7 +65,7 @@ void W32Fuzzer::test_GetProcLengths() {
 
 // Private: loads the Win32 API library (e.g. gdi32) into memory, if not already
 // loaded.
-void W32Fuzzer::loadWin32Image(CHAR* imageName) {
+void W32Fuzzer::loadWin32Image(const TCHAR* imageName) {
 	if (!this->getImageBaseAddress()) {
 		HMODULE imageBase;
 		if ((imageBase = GetModuleHandle(TEXT(imageName))) ==
@@ -103,7 +114,7 @@ void W32Fuzzer::populateExportedFunctions() {
 
 // Private: thread procedure that will modify the W32_FUNCTION structure passed
 // as the parameter, and attempt to find the argument length.
-DWORD __stdcall W32Fuzzer::argLengthProc(PVOID lpThreadParams) {
+DWORD __stdcall W32Fuzzer::ThreadFindParamaterCount(PVOID lpThreadParams) {
 	PW32_FUNCTION fn = (PW32_FUNCTION)lpThreadParams;
 	DWORD espRestore;
 
@@ -139,4 +150,13 @@ DWORD __stdcall W32Fuzzer::argLengthProc(PVOID lpThreadParams) {
 	}
 
 	fn->argLength = (fn->esp_2 - fn->esp_1) / 4;
+}
+
+LONG __stdcall W32Fuzzer::VectoredHandler(_EXCEPTION_POINTERS * ExceptionInfo)
+{
+	PVOID pExitThreadProc =
+		GetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), TEXT("ExitThread"));
+	ExceptionInfo->ContextRecord->Eip = (DWORD)pExitThreadProc;
+	DEBUG_BREAK;
+	return EXCEPTION_CONTINUE_EXECUTION;
 }
