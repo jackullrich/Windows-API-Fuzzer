@@ -21,7 +21,7 @@ HMODULE W32Fuzzer::getImageBaseAddress() {
 		return (HMODULE)INVALID_HANDLE_VALUE;
 	}
 
-	PIMAGE_NT_HEADERS pINH = (PIMAGE_NT_HEADERS)dwImageBase + pIDH->e_lfanew;
+	PIMAGE_NT_HEADERS pINH = (PIMAGE_NT_HEADERS)(dwImageBase + pIDH->e_lfanew);
 	if (pINH->Signature != IMAGE_NT_SIGNATURE) {
 		return (HMODULE)INVALID_HANDLE_VALUE;
 	}
@@ -40,11 +40,13 @@ list<W32_FUNCTION> W32Fuzzer::getExportedFunctions() {
 	return this->exportedFunctions;
 }
 
+// Public: sets the vectored exception handler used for fuzzing
 bool W32Fuzzer::setVectoredHook()
 {
 	return AddVectoredExceptionHandler(TRUE, W32Fuzzer::VectoredHandler);
 }
 
+// Public: removes the vectored exception handler used for fuzzing
 bool W32Fuzzer::removeVectoredHook()
 {
 	return RemoveVectoredExceptionHandler(W32Fuzzer::VectoredHandler);
@@ -52,6 +54,8 @@ bool W32Fuzzer::removeVectoredHook()
 
 void W32Fuzzer::test_GetProcLengths() {
 	for (auto const& fn : this->exportedFunctions) {
+		printf("Querying [%s] for parameter count.\n", fn.name);
+		DEBUG_BREAK;
 		DWORD dwThreadId;
 		HANDLE hThread = CreateThread(NULL, 0, &W32Fuzzer::ThreadFindParamaterCount, (PVOID)&fn, 0, &dwThreadId);
 		if (hThread) {
@@ -60,21 +64,19 @@ void W32Fuzzer::test_GetProcLengths() {
 			}
 			CloseHandle(hThread);
 		}
+		printf("\tQueried [%s] for [%d] parameters.\n", fn.name, fn.argLength);
 	}
 }
 
 // Private: loads the Win32 API library (e.g. gdi32) into memory, if not already
 // loaded.
 void W32Fuzzer::loadWin32Image(const TCHAR* imageName) {
-	if (!this->getImageBaseAddress()) {
-		HMODULE imageBase;
-		if ((imageBase = GetModuleHandle(TEXT(imageName))) ==
-			INVALID_HANDLE_VALUE) {
-			if ((imageBase = LoadLibrary(TEXT(imageName))) == INVALID_HANDLE_VALUE) {
+	if (!this->imageBaseAddress) {
+		if (!(this->imageBaseAddress = GetModuleHandle(TEXT(imageName)))) {
+			if (!(this->imageBaseAddress = LoadLibrary(TEXT(imageName)))) {
 				this->imageBaseAddress = (HMODULE)INVALID_HANDLE_VALUE;
 			}
 		}
-		this->imageBaseAddress = imageBase;
 	}
 }
 
@@ -106,7 +108,7 @@ void W32Fuzzer::populateExportedFunctions() {
 
 		W32_FUNCTION fn;
 		lstrcpyA(fn.name, fnName);
-		fn.procAddress = fn.procAddress;
+		fn.procAddress = fnProcAddr;
 
 		this->exportedFunctions.push_back(fn);
 	}
