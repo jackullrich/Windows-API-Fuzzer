@@ -2,16 +2,15 @@
 
 int __cdecl main(void) {
 
-	W32Fuzzer* fzUser32 = new W32Fuzzer(TEXT("user32.dll"));
+	W32Fuzzer* fzNCrypt = new W32Fuzzer("ncrypt.dll");
 
-	auto functions = fzUser32->getExportedFunctions();
-	auto imagebase = fzUser32->getImageBaseAddress();
+	auto functions = fzNCrypt->getExportedFunctions();
+	auto imagebase = fzNCrypt->getImageBaseAddress();
 
-	fzUser32->setVectoredHook();
-
-	fzUser32->test_GetProcLengths();
-	
-	fzUser32->removeVectoredHook();
+	fzNCrypt->setVectoredHook();
+	fzNCrypt->test_GetProcLengths();
+	fzNCrypt->test_FuzzAPI_Round1();
+	fzNCrypt->removeVectoredHook();
 
 	DEBUG_BREAK;
 
