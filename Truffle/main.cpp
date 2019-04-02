@@ -3,7 +3,7 @@
 int __cdecl main(void) {
 
 	W32Fuzzer* fzNCrypt = new W32Fuzzer("ncrypt.dll");
-
+	//test
 	auto functions = fzNCrypt->getExportedFunctions();
 	auto imagebase = fzNCrypt->getImageBaseAddress();
 
