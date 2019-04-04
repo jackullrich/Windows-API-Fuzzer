@@ -4,6 +4,7 @@
 W32Fuzzer::W32Fuzzer(const CHAR* w32ModuleName) {
 	this->loadWin32Image(w32ModuleName);
 	this->populateExportedFunctions();
+	this->RtlRandomEx = (protoRtlRandomEx)GetProcAddress(GetModuleHandle("ntdll.dll"), "RtlRandomEx");
 }
 
 W32Fuzzer::~W32Fuzzer() {
@@ -56,6 +57,12 @@ bool W32Fuzzer::removeVectoredHook()
 	return RemoveVectoredExceptionHandler(W32Fuzzer::VectoredHandler);
 }
 
+DWORD W32Fuzzer::nextRand()
+{
+	DWORD dwSeed = GetTickCount();
+	return RtlRandomEx(&dwSeed);
+}
+
 void W32Fuzzer::test_GetProcLengths() {
 	for (auto const& fn : this->exportedFunctions) {
 		printf("Querying [%s] for parameter count.\n", fn->name);
@@ -63,7 +70,7 @@ void W32Fuzzer::test_GetProcLengths() {
 		DWORD dwThreadId;
 		HANDLE hThread = CreateThread(NULL, 0, &W32Fuzzer::ThreadFindParamaterCount, (PVOID)fn, 0, &dwThreadId);
 		if (hThread) {
-			if (WaitForSingleObject(hThread, 30 * 1000) == WAIT_TIMEOUT) {
+			if (WaitForSingleObject(hThread, 3 * 1000) == WAIT_TIMEOUT) {
 				TerminateThread(hThread, -1);
 			}
 			CloseHandle(hThread);
@@ -84,16 +91,45 @@ void W32Fuzzer::test_FuzzAPI_Round1() {
 		fn->paramBuffer = VirtualAlloc(NULL, sizeof(DWORD)* fn->argLength, MEM_COMMIT, PAGE_READWRITE);
 
 		for (size_t i = 0; i < fn->argLength; i++) {
-			DWORD badVal = GetTickCount();
+			DWORD badVal = this->nextRand();
 			*(DWORD*)fn->paramBuffer = badVal;
 			printf("\tParamter [%d] = 0x%08x\n", i, badVal);
-			Sleep(50);
 		}
 
 		DWORD dwThreadId;
 		HANDLE hThread = CreateThread(NULL, 0, &W32Fuzzer::ThreadFuzzFunction, (PVOID)fn, 0, &dwThreadId);
 		if (hThread) {
-			if (WaitForSingleObject(hThread, 30 * 1000) == WAIT_TIMEOUT) {
+			if (WaitForSingleObject(hThread, 3 * 1000) == WAIT_TIMEOUT) {
+				TerminateThread(hThread, -1);
+			}
+			CloseHandle(hThread);
+		}
+		// printf("\Fuzzed [%s] for [%d] parameters.\n", fn->name, fn->argLength);
+	}
+}
+
+void W32Fuzzer::test_FuzzAPI_Round2()
+{
+	for (auto const& fn : this->exportedFunctions) {
+		printf("Fuzzing [%s] for register artifacts.\n", fn->name);
+
+		//// shit way i know, for testing
+		//if (fn->paramBuffer) {
+		//	VirtualFree(fn->paramBuffer, 0, MEM_RELEASE);
+		//}
+
+		//fn->paramBuffer = VirtualAlloc(NULL, sizeof(DWORD)* fn->argLength, MEM_COMMIT, PAGE_READWRITE);
+
+		//for (size_t i = 0; i < fn->argLength; i++) {
+		//	DWORD badVal = this->nextRand();
+		//	*(DWORD*)fn->paramBuffer = badVal;
+		//	printf("\tParamter [%d] = 0x%08x\n", i, badVal);
+		//}
+
+		DWORD dwThreadId;
+		HANDLE hThread = CreateThread(NULL, 0, &W32Fuzzer::ThreadFuzzFunction, (PVOID)fn, 0, &dwThreadId);
+		if (hThread) {
+			if (WaitForSingleObject(hThread, 3 * 1000) == WAIT_TIMEOUT) {
 				TerminateThread(hThread, -1);
 			}
 			CloseHandle(hThread);
@@ -145,6 +181,7 @@ void W32Fuzzer::populateExportedFunctions() {
 		lstrcpyA(pFn->name, fnName);
 
 		pFn->procAddress = GetProcAddress(this->imageBaseAddress, fnName);
+		pFn->imageBase = (DWORD)this->imageBaseAddress;
 
 		// fn.procAddress = fnProcAddr;
 
@@ -155,6 +192,7 @@ void W32Fuzzer::populateExportedFunctions() {
 // Private: thread procedure that will modify the W32_FUNCTION structure passed
 // as the parameter, and attempt to find the argument length.
 DWORD __stdcall W32Fuzzer::ThreadFindParamaterCount(PVOID lpThreadParams) {
+
 	PW32_FUNCTION fn = (PW32_FUNCTION)lpThreadParams;
 	DWORD espRestore;
 
@@ -193,15 +231,23 @@ DWORD __stdcall W32Fuzzer::ThreadFindParamaterCount(PVOID lpThreadParams) {
 }
 
 DWORD __stdcall W32Fuzzer::ThreadFuzzFunction(PVOID lpThreadParams) {
+
 	PW32_FUNCTION fn = (PW32_FUNCTION)lpThreadParams;
 	DWORD espRestore;
 
+	DWORD _eax;
+	DWORD _ecx;
+	DWORD _edx;
+
+	if (lstrcmp("DSRoleFreeMemory", fn->name) == 0) {
+		DEBUG_BREAK;
+	}
+
 	__asm {
-		mov edx, esp
-		mov espRestore, edx
+		mov edi, esp
+		mov espRestore, edi
 		mov ebx, [fn]
-		// mov ecx, [ebx + 76] // ecx=#args
-		mov edx, [ebx + 80] // ebx=paramBuffer
+		mov edx, [ebx + 80]
 		xor ecx, ecx
 		push_params :
 		cmp ecx, dword ptr[ebx + 76]
@@ -210,12 +256,36 @@ DWORD __stdcall W32Fuzzer::ThreadFuzzFunction(PVOID lpThreadParams) {
 			inc ecx
 			jmp push_params
 			call_function :
-		mov eax, [ebx + 64]
+		mov esi, [ebx + 64]
 			mov ecx, esp
 			mov[ebx + 68], ecx
-			call eax
-			int 3
-			pushad
+			xor eax, eax
+			xor ecx, ecx
+			xor edx, edx
+			call esi
+			mov esp, edi
+			mov _eax, eax
+			mov _ecx, ecx
+			mov _edx, edx
+	}
+
+	if (!fn->firstRun) {
+		fn->run1.eax = _eax;
+		fn->run1.ecx = _ecx;
+		fn->run1.edx = _edx;
+		//figure out if this is correctly signed subtraction 
+		fn->run1.eax_sub_mod = _eax - fn->imageBase;
+		fn->run1.ecx_sub_mod = _ecx - fn->imageBase;
+		fn->run1.edx_sub_mod = _edx - fn->imageBase;
+		fn->firstRun = 1;
+	}
+	else {
+		fn->run2.eax = _eax;
+		fn->run2.ecx = _ecx;
+		fn->run2.edx = _edx;
+		fn->run2.eax_sub_mod = _eax - fn->imageBase;
+		fn->run2.ecx_sub_mod = _ecx - fn->imageBase;
+		fn->run2.edx_sub_mod = _edx - fn->imageBase;
 	}
 }
 
@@ -224,6 +294,5 @@ LONG __stdcall W32Fuzzer::VectoredHandler(_EXCEPTION_POINTERS * ExceptionInfo)
 	PVOID pExitThreadProc =
 		GetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), TEXT("ExitThread"));
 	ExceptionInfo->ContextRecord->Eip = (DWORD)pExitThreadProc;
-	// DEBUG_BREAK;
 	return EXCEPTION_CONTINUE_EXECUTION;
 }
