@@ -1,4 +1,7 @@
 #include "W32Fuzzer.h"
+#include "hde32.h"
+
+PVOID PTR_W32_FUNCTION;
 
 // Public ctor
 W32Fuzzer::W32Fuzzer(const CHAR* w32ModuleName) {
@@ -9,7 +12,9 @@ W32Fuzzer::W32Fuzzer(const CHAR* w32ModuleName) {
 
 W32Fuzzer::~W32Fuzzer() {
 	for (auto const& fn : this->exportedFunctions) {
-		VirtualFree(fn, 0, MEM_RELEASE);
+		if (fn) {
+			VirtualFree(fn, 0, MEM_RELEASE);
+		}
 	}
 }
 
@@ -63,11 +68,29 @@ DWORD W32Fuzzer::nextRand()
 	return RtlRandomEx(&dwSeed);
 }
 
+void disassembleFunctionArguments(PW32_FUNCTION w32Function) {
+	try {
+		hde32s s;
+		int size = 0;
+
+		do
+		{
+			size += hde32_disasm((PVOID)((DWORD)w32Function->procAddress + size), &s);
+		} while (s.opcode != 0xC2);
+
+		w32Function->argLength = s.imm.imm16 / 4;
+	}
+	catch (...) {
+		DEBUG_BREAK;
+	}
+}
+
 void W32Fuzzer::test_GetProcLengths() {
 	for (auto const& fn : this->exportedFunctions) {
-		printf("Querying [%s] for parameter count.\n", fn->name);
+		// printf("Querying [%s] for parameter count.\n", fn->name);
 		//DEBUG_BREAK;
 		DWORD dwThreadId;
+		PTR_W32_FUNCTION = fn; // To print debug when crashed
 		HANDLE hThread = CreateThread(NULL, 0, &W32Fuzzer::ThreadFindParamaterCount, (PVOID)fn, 0, &dwThreadId);
 		if (hThread) {
 			if (WaitForSingleObject(hThread, 3 * 1000) == WAIT_TIMEOUT) {
@@ -75,7 +98,13 @@ void W32Fuzzer::test_GetProcLengths() {
 			}
 			CloseHandle(hThread);
 		}
-		printf("\tQueried [%s] for [%d] parameters.\n", fn->name, fn->argLength);
+		if (!fn->exceptionRaised) {
+			printf("\tQueried [%s] for [%d] parameters.\n", fn->name, fn->argLength);
+		}
+		else {
+			disassembleFunctionArguments(fn);
+			printf("\tDisassembled [%s] for [%d] parameters.\n", fn->name, fn->argLength);
+		}
 	}
 }
 
@@ -88,7 +117,7 @@ void W32Fuzzer::test_FuzzAPI_Round1() {
 			VirtualFree(fn->paramBuffer, 0, MEM_RELEASE);
 		}
 
-		fn->paramBuffer = VirtualAlloc(NULL, sizeof(DWORD)* fn->argLength, MEM_COMMIT, PAGE_READWRITE);
+		fn->paramBuffer = VirtualAlloc(NULL, sizeof(DWORD) * fn->argLength, MEM_COMMIT, PAGE_READWRITE);
 
 		for (size_t i = 0; i < fn->argLength; i++) {
 			DWORD badVal = this->nextRand();
@@ -194,6 +223,7 @@ void W32Fuzzer::populateExportedFunctions() {
 DWORD __stdcall W32Fuzzer::ThreadFindParamaterCount(PVOID lpThreadParams) {
 
 	PW32_FUNCTION fn = (PW32_FUNCTION)lpThreadParams;
+
 	DWORD espRestore;
 
 	__asm {
@@ -289,10 +319,13 @@ DWORD __stdcall W32Fuzzer::ThreadFuzzFunction(PVOID lpThreadParams) {
 	}
 }
 
-LONG __stdcall W32Fuzzer::VectoredHandler(_EXCEPTION_POINTERS * ExceptionInfo)
+LONG __stdcall W32Fuzzer::VectoredHandler(_EXCEPTION_POINTERS* ExceptionInfo)
 {
 	PVOID pExitThreadProc =
 		GetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), TEXT("ExitThread"));
 	ExceptionInfo->ContextRecord->Eip = (DWORD)pExitThreadProc;
+	PW32_FUNCTION w32Function = (PW32_FUNCTION)PTR_W32_FUNCTION;
+	w32Function->exceptionRaised = true;
+	printf("Could not execute function: [%s]\n", w32Function->name);
 	return EXCEPTION_CONTINUE_EXECUTION;
 }

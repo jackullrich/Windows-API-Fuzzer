@@ -21,9 +21,21 @@
     <ClCompile Include="W32Fuzzer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="hde32.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="W32Fuzzer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="hde32.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="table32.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="pstdint.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

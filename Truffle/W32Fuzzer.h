@@ -48,7 +48,10 @@ typedef struct _W32_FUNCTION {
 
 	BOOLEAN firstRun;
 
+	BOOLEAN exceptionRaised;
+
 } W32_FUNCTION, *PW32_FUNCTION;
+
 
 class W32Fuzzer
 {
@@ -77,4 +80,5 @@ private:
 	HMODULE imageBaseAddress;
 	list<PW32_FUNCTION> exportedFunctions;
 	protoRtlRandomEx RtlRandomEx;
+
 };
