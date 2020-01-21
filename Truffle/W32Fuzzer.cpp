@@ -64,7 +64,7 @@ bool W32Fuzzer::removeVectoredHook()
 
 DWORD W32Fuzzer::nextRand()
 {
-	DWORD dwSeed = GetTickCount();
+	static DWORD dwSeed = GetTickCount();
 	return RtlRandomEx(&dwSeed);
 }
 
@@ -87,10 +87,8 @@ void disassembleFunctionArguments(PW32_FUNCTION w32Function) {
 
 void W32Fuzzer::test_GetProcLengths() {
 	for (auto const& fn : this->exportedFunctions) {
-		// printf("Querying [%s] for parameter count.\n", fn->name);
-		//DEBUG_BREAK;
 		DWORD dwThreadId;
-		PTR_W32_FUNCTION = fn; // To print debug when crashed
+		PTR_W32_FUNCTION = fn;
 		HANDLE hThread = CreateThread(NULL, 0, &W32Fuzzer::ThreadFindParamaterCount, (PVOID)fn, 0, &dwThreadId);
 		if (hThread) {
 			if (WaitForSingleObject(hThread, 3 * 1000) == WAIT_TIMEOUT) {
@@ -101,21 +99,20 @@ void W32Fuzzer::test_GetProcLengths() {
 		if (!fn->exceptionRaised) {
 			printf("\tQueried [%s] for [%d] parameters.\n", fn->name, fn->argLength);
 		}
-		else {
-			disassembleFunctionArguments(fn);
-			printf("\tDisassembled [%s] for [%d] parameters.\n", fn->name, fn->argLength);
-		}
 	}
 }
 
 void W32Fuzzer::test_FuzzAPI_Round1() {
 	for (auto const& fn : this->exportedFunctions) {
+
+		if (fn->exceptionRaised) continue;
+
 		printf("Fuzzing [%s] for register artifacts.\n", fn->name);
 
 		// shit way i know, for testing
-		if (fn->paramBuffer) {
+		/*if (fn->paramBuffer) {
 			VirtualFree(fn->paramBuffer, 0, MEM_RELEASE);
-		}
+		}*/
 
 		fn->paramBuffer = VirtualAlloc(NULL, sizeof(DWORD) * fn->argLength, MEM_COMMIT, PAGE_READWRITE);
 
@@ -133,13 +130,15 @@ void W32Fuzzer::test_FuzzAPI_Round1() {
 			}
 			CloseHandle(hThread);
 		}
-		// printf("\Fuzzed [%s] for [%d] parameters.\n", fn->name, fn->argLength);
 	}
 }
 
 void W32Fuzzer::test_FuzzAPI_Round2()
 {
 	for (auto const& fn : this->exportedFunctions) {
+
+		if (fn->exceptionRaised) continue;
+
 		printf("Fuzzing [%s] for register artifacts.\n", fn->name);
 
 		//// shit way i know, for testing
@@ -164,6 +163,30 @@ void W32Fuzzer::test_FuzzAPI_Round2()
 			CloseHandle(hThread);
 		}
 		// printf("\Fuzzed [%s] for [%d] parameters.\n", fn->name, fn->argLength);
+	}
+}
+
+void W32Fuzzer::analyze()
+{
+	for (auto const& fn : this->exportedFunctions) {
+
+		if (fn->exceptionRaised) continue;
+
+		if ((fn->run1.eax && fn->run2.eax) && (fn->run1.eax == fn->run2.eax)) {
+			printf("ARTIFACT FOUND: %s, EAX = 0x%08X\n", fn->name, fn->run1.eax);
+			printf("SUB THE MODULE BASE: 0x%08X\n", fn->run1.eax_sub_mod);
+		}
+
+		if ((fn->run1.ecx && fn->run2.ecx) && (fn->run1.ecx == fn->run2.ecx)) {
+			printf("ARTIFACT FOUND: %s, ECX = 0x%08X\n", fn->name, fn->run1.ecx);
+			printf("SUB THE MODULE BASE: 0x%08X\n", fn->run1.ecx_sub_mod);
+		}
+
+		if ((fn->run1.edx && fn->run2.edx) && (fn->run1.edx == fn->run2.edx)) {
+			printf("ARTIFACT FOUND: %s, EDX = 0x%08X\n", fn->name, fn->run1.edx);
+			printf("SUB THE MODULE BASE: 0x%08X\n", fn->run1.edx_sub_mod);
+		}
+
 	}
 }
 
@@ -269,10 +292,6 @@ DWORD __stdcall W32Fuzzer::ThreadFuzzFunction(PVOID lpThreadParams) {
 	DWORD _ecx;
 	DWORD _edx;
 
-	if (lstrcmp("DSRoleFreeMemory", fn->name) == 0) {
-		DEBUG_BREAK;
-	}
-
 	__asm {
 		mov edi, esp
 		mov espRestore, edi
@@ -303,7 +322,7 @@ DWORD __stdcall W32Fuzzer::ThreadFuzzFunction(PVOID lpThreadParams) {
 		fn->run1.eax = _eax;
 		fn->run1.ecx = _ecx;
 		fn->run1.edx = _edx;
-		//figure out if this is correctly signed subtraction 
+		//figure out if this is correctly signed subtraction (it's not)
 		fn->run1.eax_sub_mod = _eax - fn->imageBase;
 		fn->run1.ecx_sub_mod = _ecx - fn->imageBase;
 		fn->run1.edx_sub_mod = _edx - fn->imageBase;
@@ -319,13 +338,28 @@ DWORD __stdcall W32Fuzzer::ThreadFuzzFunction(PVOID lpThreadParams) {
 	}
 }
 
+
+VOID __stdcall ExitThreadProc() {
+	PVOID pExitThreadProc =
+		GetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), TEXT("ExitThread"));
+	__asm {
+		push 0
+		call pExitThreadProc
+	}
+}
+
 LONG __stdcall W32Fuzzer::VectoredHandler(_EXCEPTION_POINTERS* ExceptionInfo)
 {
 	PVOID pExitThreadProc =
 		GetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), TEXT("ExitThread"));
-	ExceptionInfo->ContextRecord->Eip = (DWORD)pExitThreadProc;
+
+	ExceptionInfo->ContextRecord->Eip = (DWORD)&ExitThreadProc;
+
 	PW32_FUNCTION w32Function = (PW32_FUNCTION)PTR_W32_FUNCTION;
 	w32Function->exceptionRaised = true;
-	printf("Could not execute function: [%s]\n", w32Function->name);
+	w32Function->exceptionContext = *ExceptionInfo->ContextRecord;
+
+	printf("Could not execute function, will save for 2nd pass (exception): [%s]\n", w32Function->name);
+
 	return EXCEPTION_CONTINUE_EXECUTION;
 }

@@ -49,6 +49,7 @@ typedef struct _W32_FUNCTION {
 	BOOLEAN firstRun;
 
 	BOOLEAN exceptionRaised;
+	CONTEXT exceptionContext;
 
 } W32_FUNCTION, *PW32_FUNCTION;
 
@@ -66,6 +67,7 @@ public:
 	void test_GetProcLengths();
 	void test_FuzzAPI_Round1();
 	void test_FuzzAPI_Round2();
+	void analyze();
 
 private:
 	void loadWin32Image(const CHAR* imageName);
