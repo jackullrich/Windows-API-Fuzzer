@@ -4,16 +4,15 @@
 
 int __cdecl main(void) {
 
-	W32Fuzzer* fzNCrypt = new W32Fuzzer("crypt32.dll");
+	W32Fuzzer* fzNCrypt = new W32Fuzzer("ole32.dll");
 
+	//DWORD _ecx = 0;
 
-	DWORD _ecx = 0;
-
-	CertAlgIdToOID(0x38589451);
-	__asm {
-		mov _ecx, ecx
-		int 3
-	}
+	//CertAlgIdToOID(0x38589451);
+	//__asm {
+	//	mov _ecx, ecx
+	//	int 3
+	//}
 
 	auto functions = fzNCrypt->getExportedFunctions();
 	auto imagebase = fzNCrypt->getImageBaseAddress();
