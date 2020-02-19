@@ -4,25 +4,26 @@
 
 int __cdecl main(void) {
 
-	W32Fuzzer* fzNCrypt = new W32Fuzzer("ole32.dll");
+	W32Fuzzer* fuzz = new W32Fuzzer("iphlpapi.dll");
 
-	//DWORD _ecx = 0;
+	DWORD _ecx = 0;
 
-	//CertAlgIdToOID(0x38589451);
-	//__asm {
-	//	mov _ecx, ecx
-	//	int 3
-	//}
+	CertAlgIdToOID(0x38589451);
+	__asm {
+		mov _ecx, ecx
+		int 3
+	}
 
-	auto functions = fzNCrypt->getExportedFunctions();
-	auto imagebase = fzNCrypt->getImageBaseAddress();
+	auto functions = fuzz->getExportedFunctions();
+	auto imagebase = fuzz->getImageBaseAddress();
 
-	fzNCrypt->setVectoredHook();
-	fzNCrypt->test_GetProcLengths();
-	fzNCrypt->test_FuzzAPI_Round1();
-	fzNCrypt->test_FuzzAPI_Round2();
-	fzNCrypt->analyze();
-	fzNCrypt->removeVectoredHook();
+	fuzz->setTimeout(500);
+	fuzz->setVectoredHook();
+	fuzz->test_GetProcLengths();
+	fuzz->test_FuzzAPI_Round1();
+	fuzz->test_FuzzAPI_Round2();
+	fuzz->analyze();
+	fuzz->removeVectoredHook();
 
 	DEBUG_BREAK;
 

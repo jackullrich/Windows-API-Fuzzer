@@ -8,6 +8,7 @@ W32Fuzzer::W32Fuzzer(const CHAR* w32ModuleName) {
 	this->loadWin32Image(w32ModuleName);
 	this->populateExportedFunctions();
 	this->RtlRandomEx = (protoRtlRandomEx)GetProcAddress(GetModuleHandle("ntdll.dll"), "RtlRandomEx");
+	this->timeout = 1000; // default timeout = 1 second(s)
 }
 
 W32Fuzzer::~W32Fuzzer() {
@@ -91,7 +92,7 @@ void W32Fuzzer::test_GetProcLengths() {
 		PTR_W32_FUNCTION = fn;
 		HANDLE hThread = CreateThread(NULL, 0, &W32Fuzzer::ThreadFindParamaterCount, (PVOID)fn, 0, &dwThreadId);
 		if (hThread) {
-			if (WaitForSingleObject(hThread, 3 * 1000) == WAIT_TIMEOUT) {
+			if (WaitForSingleObject(hThread, this->timeout) == WAIT_TIMEOUT) {
 				TerminateThread(hThread, -1);
 			}
 			CloseHandle(hThread);
@@ -125,7 +126,7 @@ void W32Fuzzer::test_FuzzAPI_Round1() {
 		DWORD dwThreadId;
 		HANDLE hThread = CreateThread(NULL, 0, &W32Fuzzer::ThreadFuzzFunction, (PVOID)fn, 0, &dwThreadId);
 		if (hThread) {
-			if (WaitForSingleObject(hThread, 3 * 1000) == WAIT_TIMEOUT) {
+			if (WaitForSingleObject(hThread, this->timeout) == WAIT_TIMEOUT) {
 				TerminateThread(hThread, -1);
 			}
 			CloseHandle(hThread);
@@ -157,7 +158,7 @@ void W32Fuzzer::test_FuzzAPI_Round2()
 		DWORD dwThreadId;
 		HANDLE hThread = CreateThread(NULL, 0, &W32Fuzzer::ThreadFuzzFunction, (PVOID)fn, 0, &dwThreadId);
 		if (hThread) {
-			if (WaitForSingleObject(hThread, 3 * 1000) == WAIT_TIMEOUT) {
+			if (WaitForSingleObject(hThread, this->timeout) == WAIT_TIMEOUT) {
 				TerminateThread(hThread, -1);
 			}
 			CloseHandle(hThread);
@@ -188,6 +189,11 @@ void W32Fuzzer::analyze()
 		}
 
 	}
+}
+
+void W32Fuzzer::setTimeout(DWORD dwMilliSec)
+{
+	this->timeout = dwMilliSec;
 }
 
 

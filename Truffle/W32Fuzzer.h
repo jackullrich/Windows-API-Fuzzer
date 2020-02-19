@@ -68,6 +68,7 @@ public:
 	void test_FuzzAPI_Round1();
 	void test_FuzzAPI_Round2();
 	void analyze();
+	void setTimeout(DWORD dwMilliSec);
 
 private:
 	void loadWin32Image(const CHAR* imageName);
@@ -82,5 +83,6 @@ private:
 	HMODULE imageBaseAddress;
 	list<PW32_FUNCTION> exportedFunctions;
 	protoRtlRandomEx RtlRandomEx;
+	DWORD timeout;
 
 };
