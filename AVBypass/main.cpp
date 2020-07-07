@@ -1,25 +1,11 @@
 #include <Windows.h>
 
-// char eicar[] = "X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*";
+char eicar[] = "X5O!P%@AP[4\PZX54(P^)7CC)7}$EICAR-STANDARD-ANTIVIRUS-TEST-FILE!$H+H*";
 
-unsigned char s[] =
-{
-
-	0xc2, 0x2c, 0x5a, 0xf0, 0xc9, 0x5b, 0x88, 0xf7,
-	0xe8, 0x44, 0xdb, 0xfb, 0xe, 0x6c, 0xd6, 0x20,
-	0x6d, 0xbd, 0xdd, 0x3e, 0x97, 0xcd, 0xe9, 0x50,
-	0xba, 0xec, 0x14, 0x96, 0xb9, 0xe1, 0x2e, 0xb8,
-	0xd3, 0x3f, 0x39, 0x64, 0x2, 0x25, 0x6f, 0xfe,
-	0x10, 0x42, 0xad, 0x18, 0x3b, 0x5d, 0xac, 0xcb,
-	0x5f, 0x9a, 0xa3, 0xed, 0x9a, 0x9b, 0x11, 0xb,
-	0x72, 0xe1, 0x37, 0x7c, 0xb9, 0xec, 0x5b, 0xb8,
-	0xc4, 0x20, 0x73, 0xd9, 0x4a
-};
+#pragma comment(lib, "crypt32.lib")
 
 #include <iphlpapi.h>
 #pragma comment(lib, "iphlpapi.lib")
-
-#pragma comment(lib, "crypt32.lib")
 
 int main(void) {
 
@@ -27,48 +13,29 @@ int main(void) {
 	HANDLE hFile = 0;
 
 	DWORD _eax = 0;
+	DWORD _ecx = 0;
 
-	/*CertAlgIdToOID(0x38589451);
-	__asm {
-		mov _ecx, ecx
-	}
+	//CertAlgIdToOID(0x38589451);
+	//__asm {
+	//	mov _ecx, ecx
+	//}
 
-	if (_ecx != 4) {
-		 return 1;
-	}*/
+	//if (_ecx != 4) {
+	//	return 1;
+	//}
 
-	DeletePersistentTcpPortReservation(0x819234, 0x123849);
+	/*DeletePersistentTcpPortReservation(0x910234, 0x123849);
 	__asm {
 		mov _eax, eax
-	}
+		int 3
+	}*/
 
-	for (unsigned int m = 0; m < sizeof(s); ++m)
-	{
-		unsigned char c = s[m];
-		c ^= 0x15;
-		c = (c >> 0x3) | (c << _eax);
-		c -= m;
-		c = ~c;
-		c ^= 0xbf;
-		c -= 0x8b;
-		c = (c >> 0x3) | (c << _eax);
-		c = -c;
-		c = ~c;
-		c -= m;
-		c = (c >> 0x7) | (c << 0x1);
-		c = -c;
-		c = (c >> 0x3) | (c << _eax);
-		c ^= 0x13;
-		c += 0x63;
-		s[m] = c;
-	}
-
-	hFile = CreateFile(TEXT("eicar.com"), GENERIC_ALL, 0, NULL, CREATE_ALWAYS, 0, NULL);
+	hFile = CreateFile(TEXT("eicar.com.txt"), GENERIC_ALL, 0, NULL, CREATE_ALWAYS, 0, NULL);
 	if (!hFile) {
 		return 0;
 	}
 
-	if (!WriteFile(hFile, s, sizeof(s), &dwWritten, NULL)) {
+	if (!WriteFile(hFile, eicar, sizeof(eicar), &dwWritten, NULL)) {
 		CloseHandle(hFile);
 		return 0;
 	}
