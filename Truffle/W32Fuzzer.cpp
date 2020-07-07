@@ -3,11 +3,10 @@
 
 PVOID PTR_W32_FUNCTION;
 
-// Public ctor
 W32Fuzzer::W32Fuzzer(const CHAR* w32ModuleName) {
 	this->loadWin32Image(w32ModuleName);
 	this->populateExportedFunctions();
-	this->RtlRandomEx = (protoRtlRandomEx)GetProcAddress(GetModuleHandle("ntdll.dll"), "RtlRandomEx");
+	this->RtlRandomEx = (protoRtlRandomEx)GetProcAddress(GetModuleHandle(TEXT("ntdll.dll")), "RtlRandomEx");
 	this->timeout = 1000; // default timeout = 1 second(s)
 }
 

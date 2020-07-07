@@ -8,10 +8,17 @@ int __cdecl main(void) {
 
 	DWORD _ecx = 0;
 
-	CertAlgIdToOID(0x38589451);
+	CertAlgIdToOID(0x3858941);
 	__asm {
 		mov _ecx, ecx
-		int 3
+		cmp ecx, 4
+		jne virt_env
+		jmp halt
+		virt_env :
+		push 0
+			call ExitProcess
+		halt:
+			int 3
 	}
 
 	auto functions = fuzz->getExportedFunctions();
