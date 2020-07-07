@@ -10,9 +10,13 @@ using namespace std;
 
 typedef ULONG(__stdcall *protoRtlRandomEx) (PULONG Seed);
 
-// idea:
+// maybe idea:
 // fuzz with (1<--->16 parameters pointing to a piece of RWE shellcode 
 // the shellcode should have an int 3 which will trigger a breakpoint to know successful
+
+// maybe idea:
+// protect each instruction PAGE_GUARD then single step through the function 
+// somehow hash this into a unique value and use as emulation
 
 typedef struct _W32_FUNCTION_EXECUTION_STATE {
 	// stdcall - Registers EAX, ECX, and EDX are designated for use within the function.
@@ -27,7 +31,7 @@ typedef struct _W32_FUNCTION_EXECUTION_STATE {
 	// CONTEXT ctx;
 } W32_FUNCTION_EXECUTION_STATE, *PW32_FUNCTION_EXECUTION_STATE;
 
-// TODO: Classify parameter typing (e.g. DATA_VALUE, DATA_REFERENCE, CODE_REFERENCE, etc...
+// TODO: Classify parameter typing (e.g. DATA_VALUE, DATA_REFERENCE, CODE_REFERENCE, etc...)
 typedef struct _W32_FUNCTION {
 
 	CHAR name[64];
@@ -51,6 +55,8 @@ typedef struct _W32_FUNCTION {
 	BOOLEAN exceptionRaised;
 	CONTEXT exceptionContext;
 
+	DWORD imageSize;
+
 } W32_FUNCTION, *PW32_FUNCTION;
 
 
@@ -61,14 +67,15 @@ public:
 	~W32Fuzzer();
 
 	HMODULE getImageBaseAddress();
+	DWORD getSizeOfImage();
 	list<PW32_FUNCTION> getExportedFunctions();
-	bool setVectoredHook();
+	bool SetVectoredHook();
 	bool removeVectoredHook();
-	void test_GetProcLengths();
-	void test_FuzzAPI_Round1();
-	void test_FuzzAPI_Round2();
-	void analyze();
-	void setTimeout(DWORD dwMilliSec);
+	void GetProcLengths();
+	void FuzzAPI_Round1();
+	void FuzzAPI_Round2();
+	void Analyze();
+	void SetTimeout(DWORD dwMilliSec);
 
 private:
 	void loadWin32Image(const CHAR* imageName);
@@ -84,5 +91,4 @@ private:
 	list<PW32_FUNCTION> exportedFunctions;
 	protoRtlRandomEx RtlRandomEx;
 	DWORD timeout;
-
 };

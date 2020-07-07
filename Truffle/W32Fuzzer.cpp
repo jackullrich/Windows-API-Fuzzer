@@ -7,8 +7,7 @@ PVOID PTR_W32_FUNCTION;
 W32Fuzzer::W32Fuzzer(const CHAR* w32ModuleName) {
 	this->loadWin32Image(w32ModuleName);
 	this->populateExportedFunctions();
-	this->RtlRandomEx = (protoRtlRandomEx)GetProcAddress(GetModuleHandle("ntdll.dll"), "RtlRandomEx");
-	this->timeout = 1000; // default timeout = 1 second(s)
+	this->RtlRandomEx = (protoRtlRandomEx)GetProcAddress(GetModuleHandle(TEXT("ntdll.dll")), "RtlRandomEx");
 }
 
 W32Fuzzer::~W32Fuzzer() {
@@ -40,6 +39,20 @@ HMODULE W32Fuzzer::getImageBaseAddress() {
 	return this->imageBaseAddress;
 }
 
+DWORD W32Fuzzer::getSizeOfImage()
+{
+	if (!this->imageBaseAddress) {
+		return 0;
+	}
+
+	DWORD dwImageBase = (DWORD)this->imageBaseAddress;
+
+	PIMAGE_DOS_HEADER pIDH = (PIMAGE_DOS_HEADER)dwImageBase;
+	PIMAGE_NT_HEADERS pINH = (PIMAGE_NT_HEADERS)(dwImageBase + pIDH->e_lfanew);
+
+	return pINH->OptionalHeader.SizeOfImage;
+}
+
 // Public: returns the list of functions exported by name of the currently
 // loaded module.
 list<PW32_FUNCTION> W32Fuzzer::getExportedFunctions() {
@@ -47,12 +60,12 @@ list<PW32_FUNCTION> W32Fuzzer::getExportedFunctions() {
 		return this->exportedFunctions;
 	}
 
-	populateExportedFunctions();
+	this->populateExportedFunctions();
 	return this->exportedFunctions;
 }
 
 // Public: sets the vectored exception handler used for fuzzing
-bool W32Fuzzer::setVectoredHook()
+bool W32Fuzzer::SetVectoredHook()
 {
 	return AddVectoredExceptionHandler(TRUE, W32Fuzzer::VectoredHandler);
 }
@@ -69,24 +82,7 @@ DWORD W32Fuzzer::nextRand()
 	return RtlRandomEx(&dwSeed);
 }
 
-void disassembleFunctionArguments(PW32_FUNCTION w32Function) {
-	try {
-		hde32s s;
-		int size = 0;
-
-		do
-		{
-			size += hde32_disasm((PVOID)((DWORD)w32Function->procAddress + size), &s);
-		} while (s.opcode != 0xC2);
-
-		w32Function->argLength = s.imm.imm16 / 4;
-	}
-	catch (...) {
-		DEBUG_BREAK;
-	}
-}
-
-void W32Fuzzer::test_GetProcLengths() {
+void W32Fuzzer::GetProcLengths() {
 	for (auto const& fn : this->exportedFunctions) {
 		DWORD dwThreadId;
 		PTR_W32_FUNCTION = fn;
@@ -98,22 +94,18 @@ void W32Fuzzer::test_GetProcLengths() {
 			CloseHandle(hThread);
 		}
 		if (!fn->exceptionRaised) {
-			printf("\tQueried [%s] for [%d] parameters.\n", fn->name, fn->argLength);
+			printf_s("\tQueried [%s] for [%d] parameters.\n", fn->name, fn->argLength);
 		}
 	}
 }
 
-void W32Fuzzer::test_FuzzAPI_Round1() {
+void W32Fuzzer::FuzzAPI_Round1() {
+
 	for (auto const& fn : this->exportedFunctions) {
 
 		if (fn->exceptionRaised) continue;
 
-		printf("Fuzzing [%s] for register artifacts.\n", fn->name);
-
-		// shit way i know, for testing
-		/*if (fn->paramBuffer) {
-			VirtualFree(fn->paramBuffer, 0, MEM_RELEASE);
-		}*/
+		printf_s("Fuzzing [%s] for register artifacts.\n", fn->name);
 
 		fn->paramBuffer = VirtualAlloc(NULL, sizeof(DWORD) * fn->argLength, MEM_COMMIT, PAGE_READWRITE);
 
@@ -134,15 +126,14 @@ void W32Fuzzer::test_FuzzAPI_Round1() {
 	}
 }
 
-void W32Fuzzer::test_FuzzAPI_Round2()
+void W32Fuzzer::FuzzAPI_Round2()
 {
 	for (auto const& fn : this->exportedFunctions) {
 
 		if (fn->exceptionRaised) continue;
 
-		printf("Fuzzing [%s] for register artifacts.\n", fn->name);
+		printf_s("Fuzzing [%s] for register artifacts.\n", fn->name);
 
-		//// shit way i know, for testing
 		//if (fn->paramBuffer) {
 		//	VirtualFree(fn->paramBuffer, 0, MEM_RELEASE);
 		//}
@@ -167,43 +158,55 @@ void W32Fuzzer::test_FuzzAPI_Round2()
 	}
 }
 
-void W32Fuzzer::analyze()
+void W32Fuzzer::Analyze()
 {
 	for (auto const& fn : this->exportedFunctions) {
 
 		if (fn->exceptionRaised) continue;
 
 		if ((fn->run1.eax && fn->run2.eax) && (fn->run1.eax == fn->run2.eax)) {
-			printf("ARTIFACT FOUND: %s, EAX = 0x%08X\n", fn->name, fn->run1.eax);
-			printf("SUB THE MODULE BASE: 0x%08X\n", fn->run1.eax_sub_mod);
+			printf_s("ARTIFACT FOUND: %s, EAX = 0x%08X\n", fn->name, fn->run1.eax);
+
+			if (fn->run1.eax > fn->imageBase && fn->run1.eax < fn->imageBase + fn->imageSize) {
+				printf_s("SANS MODULE BASE: 0x%I64d\n", fn->run1.eax_sub_mod);
+			}
 		}
 
 		if ((fn->run1.ecx && fn->run2.ecx) && (fn->run1.ecx == fn->run2.ecx)) {
-			printf("ARTIFACT FOUND: %s, ECX = 0x%08X\n", fn->name, fn->run1.ecx);
-			printf("SUB THE MODULE BASE: 0x%08X\n", fn->run1.ecx_sub_mod);
+			printf_s("ARTIFACT FOUND: %s, ECX = 0x%08X\n", fn->name, fn->run1.ecx);
+
+			if (fn->run1.ecx > fn->imageBase && fn->run1.ecx < fn->imageBase + fn->imageSize) {
+				printf_s("SANS MODULE BASE: 0x%I64d\n", fn->run1.ecx_sub_mod);
+			}
 		}
 
 		if ((fn->run1.edx && fn->run2.edx) && (fn->run1.edx == fn->run2.edx)) {
-			printf("ARTIFACT FOUND: %s, EDX = 0x%08X\n", fn->name, fn->run1.edx);
-			printf("SUB THE MODULE BASE: 0x%08X\n", fn->run1.edx_sub_mod);
+			printf_s("ARTIFACT FOUND: %s, EDX = 0x%08X\n", fn->name, fn->run1.edx);
+
+			if (fn->run1.edx > fn->imageBase && fn->run1.edx < fn->imageBase + fn->imageSize) {
+				printf_s("SANS MODULE BASE: 0x%I64d\n", fn->run1.edx_sub_mod);
+			}
 		}
 
 	}
+
+	printf_s("ImageBase: 0x%008X\n", (DWORD)this->getImageBaseAddress());
+	printf_s("ImageSize: 0x%008X\n", this->getSizeOfImage());
 }
 
-void W32Fuzzer::setTimeout(DWORD dwMilliSec)
+void W32Fuzzer::SetTimeout(DWORD dwMilliSec)
 {
 	this->timeout = dwMilliSec;
 }
 
 
-// Private: loads the Win32 API library (e.g. gdi32) into memory, if not already
-// loaded.
+// Private: loads the Win32 API library (e.g. gdi32) into memory.
 void W32Fuzzer::loadWin32Image(const CHAR* imageName) {
 	if (!this->imageBaseAddress) {
-		if (!(this->imageBaseAddress = GetModuleHandle(TEXT(imageName)))) {
-			if (!(this->imageBaseAddress = LoadLibrary(TEXT(imageName)))) {
-				this->imageBaseAddress = (HMODULE)INVALID_HANDLE_VALUE;
+		if (!(this->imageBaseAddress = GetModuleHandle(imageName))) {
+			if (!(this->imageBaseAddress = LoadLibrary(imageName))) {
+				printf_s("Could not load module.");
+				exit(0);
 			}
 		}
 	}
@@ -212,7 +215,9 @@ void W32Fuzzer::loadWin32Image(const CHAR* imageName) {
 // Private: populates the list of functions exported by name of the currently
 // loaded module.
 void W32Fuzzer::populateExportedFunctions() {
+
 	HMODULE imageBase = this->getImageBaseAddress();
+
 	if (!imageBase) {
 		return;
 	}
@@ -240,6 +245,7 @@ void W32Fuzzer::populateExportedFunctions() {
 
 		pFn->procAddress = GetProcAddress(this->imageBaseAddress, fnName);
 		pFn->imageBase = (DWORD)this->imageBaseAddress;
+		pFn->imageSize = this->getSizeOfImage();
 
 		// fn.procAddress = fnProcAddr;
 
@@ -328,26 +334,28 @@ DWORD __stdcall W32Fuzzer::ThreadFuzzFunction(PVOID lpThreadParams) {
 		fn->run1.eax = _eax;
 		fn->run1.ecx = _ecx;
 		fn->run1.edx = _edx;
-		//figure out if this is correctly signed subtraction (it's not)
-		fn->run1.eax_sub_mod = _eax - fn->imageBase;
-		fn->run1.ecx_sub_mod = _ecx - fn->imageBase;
-		fn->run1.edx_sub_mod = _edx - fn->imageBase;
+
+		fn->run1.eax_sub_mod = _eax > fn->imageBase && _eax < (fn->imageBase + fn->imageSize) ? _eax & fn->imageBase : 0;
+		fn->run1.ecx_sub_mod = _ecx > fn->imageBase && _ecx < (fn->imageBase + fn->imageSize) ? _ecx & fn->imageBase : 0;
+		fn->run1.edx_sub_mod = _edx > fn->imageBase && _edx < (fn->imageBase + fn->imageSize) ? _edx & fn->imageBase : 0;
+
 		fn->firstRun = 1;
 	}
 	else {
 		fn->run2.eax = _eax;
 		fn->run2.ecx = _ecx;
 		fn->run2.edx = _edx;
-		fn->run2.eax_sub_mod = _eax - fn->imageBase;
-		fn->run2.ecx_sub_mod = _ecx - fn->imageBase;
-		fn->run2.edx_sub_mod = _edx - fn->imageBase;
+
+		fn->run1.eax_sub_mod = _eax > fn->imageBase && _eax < (fn->imageBase + fn->imageSize) ? _eax & fn->imageBase : 0;
+		fn->run1.ecx_sub_mod = _ecx > fn->imageBase && _ecx < (fn->imageBase + fn->imageSize) ? _ecx & fn->imageBase : 0;
+		fn->run1.edx_sub_mod = _edx > fn->imageBase && _edx < (fn->imageBase + fn->imageSize) ? _edx & fn->imageBase : 0;
 	}
 }
 
 
 VOID __stdcall ExitThreadProc() {
 	PVOID pExitThreadProc =
-		GetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), TEXT("ExitThread"));
+		GetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), "ExitThread");
 	__asm {
 		push 0
 		call pExitThreadProc
@@ -357,7 +365,7 @@ VOID __stdcall ExitThreadProc() {
 LONG __stdcall W32Fuzzer::VectoredHandler(_EXCEPTION_POINTERS* ExceptionInfo)
 {
 	PVOID pExitThreadProc =
-		GetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), TEXT("ExitThread"));
+		GetProcAddress(GetModuleHandle(TEXT("kernel32.dll")), "ExitThread");
 
 	ExceptionInfo->ContextRecord->Eip = (DWORD)&ExitThreadProc;
 
@@ -365,7 +373,8 @@ LONG __stdcall W32Fuzzer::VectoredHandler(_EXCEPTION_POINTERS* ExceptionInfo)
 	w32Function->exceptionRaised = true;
 	w32Function->exceptionContext = *ExceptionInfo->ContextRecord;
 
-	printf("Could not execute function, will save for 2nd pass (exception): [%s]\n", w32Function->name);
+	// ToDo: Mark function for secondary analysis techniques
+	printf_s("Exception thrown while executing function [%s].\n", w32Function->name);
 
 	return EXCEPTION_CONTINUE_EXECUTION;
 }
